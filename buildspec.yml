@@ -14,10 +14,10 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker image...
       - docker build -t 853202365172.dkr.ecr.us-east-1.amazonaws.com/ws-code-pipeline-poc:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag 853202365172.dkr.ecr.us-east-1.amazonaws.com/ws-code-pipeline-poc:latest 853202365172.dkr.ecr.us-east-1.amazonaws.com/ws-code-pipeline-poc:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push 853202365172.dkr.ecr.us-east-1.amazonaws.com/ws-code-pipeline-poc:latest
+      - docker push 853202365172.dkr.ecr.us-east-1.amazonaws.com/ws-code-pipeline-poc:latest
