@@ -1,2 +1,0 @@
-# awsCodeBuildPoC
-PoC
