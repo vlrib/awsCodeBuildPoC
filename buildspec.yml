@@ -2,7 +2,7 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - IMAGE_TAG="v1.1.0"
+      - IMAGE_TAG="v2.1.0"
       - echo Logging in to Amazon ECR...
       - aws --version
       - docker login -u $dockerhub_username -p $dockerhub_password
