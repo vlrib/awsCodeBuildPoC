@@ -3,6 +3,7 @@ phases:
   pre_build:
     commands:
       - IMAGE_TAG="v4.1.0"
+      - REPOSITORY_NAME="ws-code-build-poc"
       - echo Logging in to Amazon ECR...
       - aws --version
       - docker login -u $dockerhub_username -p $dockerhub_password
@@ -21,6 +22,20 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - printf '[{"name":"ws-poc","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imagedefinitions.json
-      
+      ## Scanning Images
+      - aws ecr start-image-scan --repository-name $REPOSITORY_NAME  --image-id imageTag=$IMAGE_TAG
+      - aws ecr wait image-scan-complete --repository-name $REPOSITORY_NAME --image-id imageTag=$IMAGE_TAG
+      - |
+      if [ $(echo $?) -eq 0 ]; then
+        SCAN_FINDINGS=$(aws ecr describe-image-scan-findings --repository-name $REPOSITORY_NAME --image-id imageTag=$IMAGE_TAG | jq '.imageScanFindings.findingSeverityCounts')
+        CRITICAL=$(echo $SCAN_FINDINGS | jq '.CRITICAL')
+        HIGH=$(echo $SCAN_FINDINGS | jq '.HIGH')
+        if [ $CRITICAL != null ] || [ $HIGH != null ]; then
+          echo Docker image contains vulnerabilities at CRITICAL or HIGH level
+          aws ecr batch-delete-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_TAG
+          exit 1
+        fi
+      fi
+        
 artifacts:
     files: imagedefinitions.json
