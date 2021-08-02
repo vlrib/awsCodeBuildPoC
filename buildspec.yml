@@ -22,7 +22,7 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - printf '[{"name":"ws-poc","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imagedefinitions.json
-      - ./scan.sh
+      - ./image_scan.sh
       ## Scanning Images
 #       - aws ecr start-image-scan --repository-name $REPOSITORY_NAME  --image-id imageTag=$IMAGE_TAG
 #       - aws ecr wait image-scan-complete --repository-name $REPOSITORY_NAME --image-id imageTag=$IMAGE_TAG
