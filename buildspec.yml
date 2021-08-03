@@ -4,12 +4,11 @@ phases:
     commands:
       - IMAGE_TAG="v4.1.0"
       - IMAGE_REPO_NAME="ws-code-build-poc"
+      - PIPELINE_NAME="poc-ws"
       - echo Logging in to Amazon ECR...
       - aws --version
       - docker login -u $dockerhub_username -p $dockerhub_password
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com 
-#       - TAG_IMAGE="$(git describe --tags --abbresv=0)"
-      ##- COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7) "teste"
   build:
     commands:
       - echo Build started on `date`
@@ -24,20 +23,6 @@ phases:
       - printf '[{"name":"ws-poc","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imagedefinitions.json
       - chmod +x ./image_scan.sh
       - ./image_scan.sh
-      ## Scanning Images
-#       - aws ecr start-image-scan --repository-name $REPOSITORY_NAME  --image-id imageTag=$IMAGE_TAG
-#       - aws ecr wait image-scan-complete --repository-name $REPOSITORY_NAME --image-id imageTag=$IMAGE_TAG
-#       - |
-#       if [ $(echo $?) -eq 0 ]; then
-#         SCAN_FINDINGS=$(aws ecr describe-image-scan-findings --repository-name $REPOSITORY_NAME --image-id imageTag=$IMAGE_TAG | jq '.imageScanFindings.findingSeverityCounts')
-#         CRITICAL=$(echo $SCAN_FINDINGS | jq '.CRITICAL')
-#         HIGH=$(echo $SCAN_FINDINGS | jq '.HIGH')
-#         if [ $CRITICAL != null ] || [ $HIGH != null ]; then
-#           echo Docker image contains vulnerabilities at CRITICAL or HIGH level
-#           aws ecr batch-delete-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_TAG
-#           exit 1
-#         fi
-#       fi
         
 artifacts:
     files: imagedefinitions.json
