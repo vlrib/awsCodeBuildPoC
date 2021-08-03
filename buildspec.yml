@@ -3,7 +3,7 @@ phases:
   pre_build:
     commands:
       - IMAGE_TAG="v4.1.0"
-      - REPOSITORY_NAME="ws-code-build-poc"
+      - IMAGE_REPO_NAME="ws-code-build-poc"
       - echo Logging in to Amazon ECR...
       - aws --version
       - docker login -u $dockerhub_username -p $dockerhub_password
